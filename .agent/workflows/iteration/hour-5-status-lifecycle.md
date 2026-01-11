@@ -7,11 +7,7 @@ description: Hour 5 - Implement bottle status lifecycle with transitions and his
 ## Goal
 Implement proper status transitions, filtering, and consumption history.
 
-## Testing Checklist
-> [!IMPORTANT]
-> This checklist must be completed before any of the Success Criteria are met.
 
-- [ ] Status transitions obey rules
 
 ## Success Criteria
 > [!IMPORTANT]
@@ -21,6 +17,16 @@ Implement proper status transitions, filtering, and consumption history.
 - [ ] Filter bottles by status
 - [ ] Consumption history view
 - [ ] Status statistics
+
+## Testing Checklist
+> [!IMPORTANT]
+> This checklist must be completed before any of the Success Criteria are met.
+
+- [ ] Status transitions obey rules
+- [ ] All transition data fields are captured correctly
+- [ ] Filtering by status works as expected
+- [ ] Consumption history displays all relevant data
+- [ ] Status statistics are accurate
 
 ## Status Flow
 ```

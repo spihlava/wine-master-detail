@@ -13,6 +13,12 @@ Implement bottle detail records with CRUD operations and integrate with wine det
 - [ ] Add bottles to a wine
 - [ ] View all bottles for a wine
 - [ ] Edit bottle status/location
+
+## Testing Checklist
+> [!IMPORTANT]
+> This checklist must be completed before any of the Success Criteria are met.
+
+- [ ] `npm run dev` starts without errorstable
 - [ ] Delete bottles
 - [ ] Consume bottle workflow
 - [ ] Bottle count on wine view
@@ -55,11 +61,7 @@ consumeBottle.mutate({
 });
 ```
 
-## Testing Checklist
-> [!IMPORTANT]
-> This checklist must be completed before any of the Success Criteria are met.
 
-- [ ] `npm run dev` starts without errorstable
 
 ## Testing
 - Add bottle → appears in table

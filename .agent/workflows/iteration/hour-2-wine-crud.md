@@ -19,6 +19,21 @@ Create complete CRUD operations for wine master records with proper service laye
 - [ ] Delete wine confirmation
 - [ ] All operations type-safe with Zod validation
 
+## Testing Checklist
+> [!IMPORTANT]
+> This checklist must be completed before any of the Success Criteria are met.
+
+- [ ] `npm run dev` starts without errorsm database
+- [ ] Wine list shows all wines from database
+- [ ] Can create a new wine (form validates, saves to DB)
+- [ ] Wine appears in list after creation
+- [ ] Can click wine to view details
+- [ ] Can edit wine and changes persist
+- [ ] Can delete wine and it's removed from list
+- [ ] Error states handled (loading, error messages)
+- [ ] TypeScript compiles without errors
+- [ ] ESLint passes
+
 ## Prerequisites
 - Hour 1 completed (database schema)
 - Supabase connection working
@@ -506,20 +521,7 @@ export default config
 
 Install forms plugin: `npm install -D @tailwindcss/forms`
 
-## Testing Checklist
-> [!IMPORTANT]
-> This checklist must be completed before any of the Success Criteria are met.
 
-- [ ] `npm run dev` starts without errorsm database
-- [ ] Wine list shows all wines from database
-- [ ] Can create a new wine (form validates, saves to DB)
-- [ ] Wine appears in list after creation
-- [ ] Can click wine to view details
-- [ ] Can edit wine and changes persist
-- [ ] Can delete wine and it's removed from list
-- [ ] Error states handled (loading, error messages)
-- [ ] TypeScript compiles without errors
-- [ ] ESLint passes
 
 ## Deliverables
 - Complete wine service layer

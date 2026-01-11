@@ -21,6 +21,20 @@ Create the foundational database schema with wines (master), bottles (detail), a
 - [x] TypeScript types generated from Supabase
 - [x] Zod schemas created for validation
 
+## Testing Checklist
+> [!IMPORTANT]
+> This checklist must be completed before any of the Success Criteria are met.
+
+- [x] Next.js project created and running (`npm run dev`)
+- [x] Supabase connection works (no errors in console)
+- [x] Wines table accepts inserts
+- [x] Bottles table accepts inserts with valid wine_id
+- [x] Bottles table rejects inserts with invalid wine_id
+- [x] CHECK constraints work (try invalid status, rating > 100)
+- [x] Indexes created (check in Supabase dashboard)
+- [x] TypeScript types match database schema
+- [x] Zod schemas validate correctly
+
 ## Prerequisites
 - Supabase account and project created
 - Project URL and anon key available
@@ -412,19 +426,7 @@ FROM wines w
 JOIN bottles b ON b.wine_id = w.id;
 ```
 
-## Testing Checklist
-> [!IMPORTANT]
-> This checklist must be completed before any of the Success Criteria are met.
 
-- [x] Next.js project created and running (`npm run dev`)
-- [x] Supabase connection works (no errors in console)
-- [x] Wines table accepts inserts
-- [x] Bottles table accepts inserts with valid wine_id
-- [x] Bottles table rejects inserts with invalid wine_id
-- [x] CHECK constraints work (try invalid status, rating > 100)
-- [x] Indexes created (check in Supabase dashboard)
-- [x] TypeScript types match database schema
-- [x] Zod schemas validate correctly
 
 ## Deliverables
 - Working Next.js + Supabase project

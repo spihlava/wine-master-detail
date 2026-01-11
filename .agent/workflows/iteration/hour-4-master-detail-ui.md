@@ -7,11 +7,7 @@ description: Hour 4 - Create master-detail layout with generic components and re
 ## Goal
 Create generic layout components and apply premium styling to the wine/bottle interface.
 
-## Testing Checklist
-> [!IMPORTANT]
-> This checklist must be completed before any of the Success Criteria are met.
 
-- [ ] Generic layouts render correctlys and apply premium styling to the wine/bottle interface.
 
 ## Success Criteria
 > [!IMPORTANT]
@@ -19,6 +15,12 @@ Create generic layout components and apply premium styling to the wine/bottle in
 - [ ] MasterDetailLayout component
 - [ ] MasterCard generic component
 - [ ] DetailTable generic component
+
+## Testing Checklist
+> [!IMPORTANT]
+> This checklist must be completed before any of the Success Criteria are met.
+
+- [ ] Generic layouts render correctlys and apply premium styling to the wine/bottle interface.
 - [ ] Wine-specific wrappers using generics
 - [ ] Responsive design (mobile-first)
 - [ ] Dark mode support

@@ -18,6 +18,16 @@ Initialize the Next.js application, set up the development environment, and conf
 - [x] Linting and formatting configurations active
 - [x] Application successfully builds and runs locally
 
+## Testing Checklist
+> [!IMPORTANT]
+> This checklist must be completed before any of the Success Criteria are met.
+
+- [x] `npm run dev` starts without errors
+- [x] Home page loads at http://localhost:3000
+- [x] Directory structure exists under `src/`
+- [x] `package.json` contains all installed dependencies
+- [x] Tailwind CSS is working (edit page.tsx to test a class)
+
 ## Prerequisites
 - Node.js 18+ installed
 - npm installed
@@ -93,15 +103,7 @@ Run the development server to ensure everything is connected.
 npm run dev
 ```
 
-## Testing Checklist
-> [!IMPORTANT]
-> This checklist must be completed before any of the Success Criteria are met.
 
-- [x] `npm run dev` starts without errors
-- [x] Home page loads at http://localhost:3000
-- [x] Directory structure exists under `src/`
-- [x] `package.json` contains all installed dependencies
-- [x] Tailwind CSS is working (edit page.tsx to test a class)
 
 ## Deliverables
 - Initialized Next.js codebase

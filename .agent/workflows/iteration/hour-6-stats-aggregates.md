@@ -13,14 +13,16 @@ Create computed statistics from bottle data and build a cellar dashboard.
 - [ ] useWineStats hook (count, value, avg rating)
 - [ ] Cellar overview dashboard
 - [ ] Drinking window alerts
-- [ ] Value tracking
-- [ ] Basic charts/visualizations
 
 ## Testing Checklist
 > [!IMPORTANT]
 > This checklist must be completed before any of the Success Criteria are met.
 
 - [ ] Dashboard stats match database
+- [ ] Value tracking
+- [ ] Basic charts/visualizations
+
+
 
 ## Key Computations
 
