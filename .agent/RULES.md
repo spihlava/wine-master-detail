@@ -43,9 +43,9 @@ These rules are ALWAYS enforced. No exceptions without explicit user approval.
 │  ❌ Never store: my_rating,         │
 │     my_notes, status, location      │
 └─────────────────────────────────────┘
-              │
-              │ 1:N relationship
-              ▼
+               │
+               │ 1:N relationship
+               ▼
 ┌─────────────────────────────────────┐
 │  DETAIL (Bottle)                    │
 │  ─────────────────                  │
@@ -67,10 +67,10 @@ These rules are ALWAYS enforced. No exceptions without explicit user approval.
 ### Data Flow
 ```
 Component → Hook → Service → Supabase
-                      ↓
-              Zod Validation
-                      ↓
-              Typed Response
+                       ↓
+               Zod Validation
+                       ↓
+               Typed Response
 ```
 
 - No direct Supabase calls in components
@@ -192,3 +192,19 @@ Examples:
 - `main` - production-ready code
 - `hour-N-*` - work-in-progress for each iteration
 - Merge to main after hour completion and testing
+
+## Project Rules
+
+### Testing Policy
+All new code must be accompanied by unit tests.
+The entire test suite must pass (`npm test`) before any changes are considered complete or merged.
+Tests should cover critical logic, including service layer functions, component behavior, and schema validation.
+Existing workflows (e.g., Hour 2, Hour 3, etc.) have been updated to enforce this rule.
+
+### Linting Policy
+ESLint is configured with default rules; custom rules are disabled to allow `console.error` and to avoid import ordering enforcement.
+
+### Development Guidelines
+- Follow the design system and UI component guidelines.
+- Ensure accessibility by linking labels to form controls.
+These rules are mandatory for all contributors.

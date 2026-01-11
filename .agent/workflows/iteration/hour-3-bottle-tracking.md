@@ -13,15 +13,20 @@ Implement bottle detail records with CRUD operations and integrate with wine det
 - [ ] Add bottles to a wine
 - [ ] View all bottles for a wine
 - [ ] Edit bottle status/location
+- [ ] Unit tests for bottle service/hooks
 
 ## Testing Checklist
 > [!IMPORTANT]
 > This checklist must be completed before any of the Success Criteria are met.
 
-- [ ] `npm run dev` starts without errorstable
+- [ ] `npm run dev` starts without errors
 - [ ] Delete bottles
 - [ ] Consume bottle workflow
 - [ ] Bottle count on wine view
+- [ ] Screenshot of Bottle Table populated with data
+- [ ] Screenshot of Bottle Table populated with data
+- [ ] Screenshot of Consume Modal
+- [ ] All unit tests pass
 
 ## Steps
 

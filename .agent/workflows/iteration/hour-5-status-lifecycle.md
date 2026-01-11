@@ -17,6 +17,7 @@ Implement proper status transitions, filtering, and consumption history.
 - [ ] Filter bottles by status
 - [ ] Consumption history view
 - [ ] Status statistics
+- [ ] Unit tests for status transition logic
 
 ## Testing Checklist
 > [!IMPORTANT]
@@ -27,6 +28,10 @@ Implement proper status transitions, filtering, and consumption history.
 - [ ] Filtering by status works as expected
 - [ ] Consumption history displays all relevant data
 - [ ] Status statistics are accurate
+- [ ] Screenshot of Status Filter
+- [ ] Screenshot of Consumption History
+- [ ] Screenshot of Status Badge
+- [ ] All unit tests pass
 
 ## Status Flow
 ```

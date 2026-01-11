@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(git -C /d/Projects/wine-master-detail log --oneline --graph -20)",
+      "Bash(cat:*)",
+      "Bash(find:*)"
+    ]
+  }
+}

@@ -13,6 +13,14 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    rules: {
+      // Allow console.error and console.warn, warn on console.log
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+      // Disable strict import ordering
+      "import/order": "off",
+    },
+  },
 ]);
 
 export default eslintConfig;

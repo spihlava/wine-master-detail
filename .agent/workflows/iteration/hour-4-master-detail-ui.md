@@ -15,6 +15,7 @@ Create generic layout components and apply premium styling to the wine/bottle in
 - [ ] MasterDetailLayout component
 - [ ] MasterCard generic component
 - [ ] DetailTable generic component
+- [ ] Unit tests for generic components
 
 ## Testing Checklist
 > [!IMPORTANT]
@@ -24,6 +25,12 @@ Create generic layout components and apply premium styling to the wine/bottle in
 - [ ] Wine-specific wrappers using generics
 - [ ] Responsive design (mobile-first)
 - [ ] Dark mode support
+- [ ] Screenshot of Master-Detail Layout (Desktop)
+- [ ] Screenshot of Master-Detail Layout (Mobile)
+- [ ] Screenshot of Dark Mode
+- [ ] Screenshot of Dark Mode
+- [ ] Test data imported (5+ wines, 20+ bottles)
+- [ ] All unit tests pass
 
 ## Components to Create
 
@@ -43,6 +50,12 @@ WineCard.tsx - Uses MasterCard with wine data
 WineDetail.tsx - Full wine view with MasterDetailLayout
 WineStats.tsx - Wine-specific aggregates
 ```
+
+### 5. Data Seeding
+- Create a seed script or UI button to generate:
+  - 5+ Wines with varied types/regions
+  - 20+ Bottles distributed across wines
+  - Varied statuses (In Cellar, Consumed)
 
 ## Layout Structure
 
