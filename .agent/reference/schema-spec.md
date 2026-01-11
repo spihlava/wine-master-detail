@@ -51,7 +51,7 @@ CREATE INDEX idx_wines_type ON wines(type);
 CREATE INDEX idx_wines_region ON wines(region);
 ```
 
-## bottles Table (Detail)
+## bottles Table (Detail of Wine / Master of Events)
 
 ```sql
 CREATE TABLE bottles (
@@ -66,35 +66,108 @@ CREATE TABLE bottles (
   size text DEFAULT '750ml',
   barcode text UNIQUE,
   
-  -- Status
-  status text NOT NULL DEFAULT 'cellar' 
-    CHECK (status IN ('cellar','consumed','gifted','sold','damaged')),
+  -- Current State (derived from events, cached here for fast queries)
+  current_status text NOT NULL DEFAULT 'cellar' 
+    CHECK (current_status IN ('cellar','consumed','gifted','sold','damaged')),
+  current_location text,
+  current_bin text,
   
-  -- Location
-  location text,
-  bin text,
-  
-  -- Purchase
+  -- Purchase Cache (denormalized from first transaction)
   purchase_price decimal(10,2),
   purchase_location text,
   purchase_date date,
   
-  -- Value
-  price decimal(10,2),
+  -- Current Value
+  current_value decimal(10,2),
   
-  -- Consumption
+  -- Consumption Cache (denormalized from consuming tasting)
   consumed_date date,
-  my_rating integer CHECK (my_rating IS NULL OR (my_rating >= 0 AND my_rating <= 100)),
-  my_notes text,
   
-  CONSTRAINT consumed_has_date CHECK (status != 'consumed' OR consumed_date IS NOT NULL)
+  CONSTRAINT consumed_has_date CHECK (current_status != 'consumed' OR consumed_date IS NOT NULL)
 );
 
 -- Indexes
 CREATE INDEX idx_bottles_wine_id ON bottles(wine_id);
-CREATE INDEX idx_bottles_status ON bottles(status);
-CREATE INDEX idx_bottles_location ON bottles(location);
+CREATE INDEX idx_bottles_status ON bottles(current_status);
+CREATE INDEX idx_bottles_location ON bottles(current_location);
 ```
+
+---
+
+## Event Tables (Sub-Details of Bottle)
+
+### bottle_transactions (Financial Events)
+
+```sql
+CREATE TABLE bottle_transactions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  bottle_id uuid NOT NULL REFERENCES bottles(id) ON DELETE CASCADE,
+  
+  transaction_type text NOT NULL CHECK (transaction_type IN (
+    'purchase', 'sale', 'gift_received', 'gift_given', 'valuation'
+  )),
+  transaction_date date NOT NULL,
+  price decimal(10,2),
+  counterparty text,  -- Store name, buyer, gift giver/recipient
+  notes text,
+  
+  created_at timestamptz DEFAULT now() NOT NULL
+);
+
+CREATE INDEX idx_transactions_bottle ON bottle_transactions(bottle_id);
+CREATE INDEX idx_transactions_type ON bottle_transactions(transaction_type);
+CREATE INDEX idx_transactions_date ON bottle_transactions(transaction_date);
+```
+
+### bottle_movements (Location Events)
+
+```sql
+CREATE TABLE bottle_movements (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  bottle_id uuid NOT NULL REFERENCES bottles(id) ON DELETE CASCADE,
+  
+  from_location text,
+  to_location text NOT NULL,
+  from_bin text,
+  to_bin text,
+  moved_at timestamptz NOT NULL DEFAULT now(),
+  reason text,  -- 'reorganization', 'temperature', 'accessibility'
+  notes text,
+  
+  created_at timestamptz DEFAULT now() NOT NULL
+);
+
+CREATE INDEX idx_movements_bottle ON bottle_movements(bottle_id);
+CREATE INDEX idx_movements_date ON bottle_movements(moved_at);
+```
+
+### bottle_tastings (Tasting Events)
+
+```sql
+CREATE TABLE bottle_tastings (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  bottle_id uuid NOT NULL REFERENCES bottles(id) ON DELETE CASCADE,
+  
+  tasted_at date NOT NULL,
+  rating integer CHECK (rating IS NULL OR (rating >= 0 AND rating <= 100)),
+  notes text,
+  food_pairing text,
+  occasion text,  -- 'dinner party', 'anniversary', 'casual'
+  
+  -- 'sample' = tasted but bottle still in cellar (e.g., Coravin)
+  -- 'consumed' = bottle is now empty
+  tasting_stage text NOT NULL DEFAULT 'consumed' 
+    CHECK (tasting_stage IN ('sample', 'consumed')),
+  
+  created_at timestamptz DEFAULT now() NOT NULL
+);
+
+CREATE INDEX idx_tastings_bottle ON bottle_tastings(bottle_id);
+CREATE INDEX idx_tastings_date ON bottle_tastings(tasted_at);
+CREATE INDEX idx_tastings_stage ON bottle_tastings(tasting_stage);
+```
+
+---
 
 ## Triggers
 
@@ -113,4 +186,70 @@ FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 CREATE TRIGGER bottles_updated_at BEFORE UPDATE ON bottles
 FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+
+-- Auto-update bottle status when consumed
+CREATE OR REPLACE FUNCTION on_tasting_consumed()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.tasting_stage = 'consumed' THEN
+    UPDATE bottles 
+    SET current_status = 'consumed', 
+        consumed_date = NEW.tasted_at
+    WHERE id = NEW.bottle_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tasting_consumed_trigger 
+AFTER INSERT ON bottle_tastings
+FOR EACH ROW EXECUTE FUNCTION on_tasting_consumed();
+
+-- Auto-update bottle location on movement
+CREATE OR REPLACE FUNCTION on_bottle_movement()
+RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE bottles 
+  SET current_location = NEW.to_location, 
+      current_bin = NEW.to_bin
+  WHERE id = NEW.bottle_id;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER movement_update_trigger 
+AFTER INSERT ON bottle_movements
+FOR EACH ROW EXECUTE FUNCTION on_bottle_movement();
+
+-- Auto-update bottle on transaction
+CREATE OR REPLACE FUNCTION on_bottle_transaction()
+RETURNS TRIGGER AS $$
+BEGIN
+  -- Update status based on transaction type
+  IF NEW.transaction_type = 'sale' THEN
+    UPDATE bottles SET current_status = 'sold' WHERE id = NEW.bottle_id;
+  ELSIF NEW.transaction_type = 'gift_given' THEN
+    UPDATE bottles SET current_status = 'gifted' WHERE id = NEW.bottle_id;
+  ELSIF NEW.transaction_type = 'valuation' THEN
+    UPDATE bottles SET current_value = NEW.price WHERE id = NEW.bottle_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER transaction_update_trigger 
+AFTER INSERT ON bottle_transactions
+FOR EACH ROW EXECUTE FUNCTION on_bottle_transaction();
+```
+
+---
+
+## Entity Relationship
+
+```
+wines (1) ──────< bottles (N) ──────< bottle_transactions (N)
+                      │
+                      ├──────< bottle_movements (N)
+                      │
+                      └──────< bottle_tastings (N)
 ```

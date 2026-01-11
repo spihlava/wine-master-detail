@@ -43,11 +43,11 @@
 
 ---
 
-### Bottle (Detail Record)
+### Bottle (Detail of Wine / Master of Events)
 
 **Definition:** A physical bottle instance of a wine in your inventory
 
-**Purpose:** Track your personal bottle collection - what you own, where it is, what you paid, and what you thought of it.
+**Purpose:** Track your personal bottle collection. Also serves as the master record for event logging (transactions, movements, tastings).
 
 **Attributes:**
 
@@ -56,17 +56,15 @@
 | id | uuid | Yes | Primary key |
 | wine_id | uuid | Yes | Foreign key to wines table |
 | size | text | No | Bottle size (default: "750ml") |
-| status | text | Yes | Current status (default: "cellar") |
-| location | text | No | Cellar/storage location name |
-| bin | text | No | Specific bin/rack position |
 | barcode | text | No | Unique barcode (for scanning) |
-| purchase_price | decimal | No | What you paid |
-| purchase_location | text | No | Where you bought it |
-| purchase_date | date | No | When you bought it |
-| price | decimal | No | Current estimated value |
-| consumed_date | date | No | When you drank it |
-| my_rating | integer | No | Your personal rating (0-100) |
-| my_notes | text | No | Your tasting notes |
+| current_status | text | Yes | Current status (default: "cellar") |
+| current_location | text | No | Current cellar/storage location |
+| current_bin | text | No | Current bin/rack position |
+| current_value | decimal | No | Current estimated value |
+| purchase_price | decimal | No | What you paid (cached from transaction) |
+| purchase_location | text | No | Where you bought it (cached) |
+| purchase_date | date | No | When you bought it (cached) |
+| consumed_date | date | No | When you drank it (cached from tasting) |
 | created_at | timestamp | Yes | Record creation time |
 | updated_at | timestamp | Yes | Last modification time |
 
@@ -77,12 +75,71 @@
 - `sold` - Sold to someone
 - `damaged` - Broken, corked, or otherwise unusable
 
-**Invariants:**
-- Must reference a valid wine (wine_id is required)
-- Status must be one of the valid status values
-- consumed_date is required when status = 'consumed'
-- Barcode must be unique across all bottles
-- my_rating must be 0-100 if provided
+**Dual Role:** Bottle is both:
+- **Detail** of Wine (many bottles → one wine)
+- **Master** of Events (one bottle → many transactions/movements/tastings)
+
+---
+
+## Event Logging (Sub-Details of Bottle)
+
+### Architecture
+
+```
+Wine (Master)
+  │
+  └─► Bottles (Detail of Wine / Master of Events)
+        │
+        ├─► Transactions (purchase, sale, gift, valuation)
+        ├─► Movements (location/bin tracking over time)
+        └─► Tastings (sampling + consumption notes)
+```
+
+### bottle_transactions
+
+Financial events: purchases, sales, gifts, valuations.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| transaction_type | text | purchase, sale, gift_received, gift_given, valuation |
+| transaction_date | date | When it happened |
+| price | decimal | Amount (purchase price, sale price, valuation) |
+| counterparty | text | Store, buyer, gift recipient |
+| notes | text | Additional notes |
+
+### bottle_movements
+
+Location tracking over time.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| from_location | text | Previous location (null if first) |
+| to_location | text | New location |
+| from_bin | text | Previous bin |
+| to_bin | text | New bin |
+| moved_at | timestamp | When moved |
+| reason | text | reorganization, temperature, accessibility |
+
+### bottle_tastings
+
+Tasting notes and consumption records.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| tasted_at | date | When tasted |
+| rating | integer | Your rating (0-100) |
+| notes | text | Tasting notes |
+| food_pairing | text | What you paired it with |
+| occasion | text | dinner party, anniversary, casual |
+| tasting_stage | text | `sample` (Coravin) or `consumed` (finished) |
+
+### Event Triggers
+
+Database triggers auto-update bottle state:
+- **Tasting with stage=consumed** → Sets `current_status='consumed'`, `consumed_date`
+- **Movement inserted** → Updates `current_location`, `current_bin`
+- **Transaction sale/gift_given** → Updates `current_status`
+- **Transaction valuation** → Updates `current_value`
 
 ---
 
@@ -109,11 +166,11 @@
                    └──────────────────────────────────────────┘
 ```
 
-**Transition Rules:**
-1. Only bottles with status `cellar` can transition to other statuses
-2. Transitions are one-way (cannot go back to `cellar`)
-3. `consumed` requires setting `consumed_date`
-4. All transitions should update `updated_at`
+**How Status Changes:**
+- `consumed` ← Insert tasting with `tasting_stage='consumed'`
+- `gifted` ← Insert transaction with `transaction_type='gift_given'`
+- `sold` ← Insert transaction with `transaction_type='sale'`
+- `damaged` ← Direct update (no event, just mark damaged)
 
 ---
 

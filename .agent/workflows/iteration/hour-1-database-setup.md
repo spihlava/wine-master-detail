@@ -5,13 +5,15 @@ description: Hour 1 - Set up Supabase database schema with wines and bottles tab
 # Hour 1: Database Setup
 
 ## Goal
-Create the foundational database schema with wines (master) and bottles (detail) tables in Supabase.
+Create the foundational database schema with wines (master), bottles (detail), and event tables (sub-details) in Supabase.
 
 ## Success Criteria
 - [ ] Supabase project connected
 - [ ] Wines table created with all fields
-- [ ] Bottles table created with all fields
-- [ ] Foreign key relationship established
+- [ ] Bottles table created with current_* fields
+- [ ] Event tables created (transactions, movements, tastings)
+- [ ] Auto-update triggers created
+- [ ] Foreign key relationships established
 - [ ] Indexes created for common queries
 - [ ] TypeScript types generated from Supabase
 - [ ] Zod schemas created for validation

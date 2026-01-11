@@ -13,7 +13,7 @@ This is a master-detail inventory management application for wine collections. T
 
 ## Data Model
 
-### Entity Relationship
+### Entity Relationship (Nested Master-Detail)
 
 ```
 ┌─────────────────────────────────────────┐
@@ -25,10 +25,7 @@ This is a master-detail inventory management application for wine collections. T
 │  producer        text                    │
 │  vintage         integer                 │
 │  type            text                    │
-│  varietal        text                    │
-│  country         text                    │
-│  region          text                    │
-│  ...other reference fields...           │
+│  ...reference fields...                 │
 │  created_at      timestamptz            │
 │  updated_at      timestamptz            │
 └─────────────────────────────────────────┘
@@ -36,33 +33,53 @@ This is a master-detail inventory management application for wine collections. T
                     │ 1:N
                     ▼
 ┌─────────────────────────────────────────┐
-│                BOTTLES                   │
-│  (Detail Records)                        │
+│               BOTTLES                    │
+│  (Detail of Wine / Master of Events)     │
 ├─────────────────────────────────────────┤
 │  id              uuid PK                 │
 │  wine_id         uuid FK → wines(id)    │
 │  size            text                    │
-│  status          text NOT NULL           │
-│  location        text                    │
-│  bin             text                    │
-│  purchase_price  decimal                 │
-│  my_rating       integer                 │
-│  my_notes        text                    │
-│  ...other instance fields...            │
-│  created_at      timestamptz            │
-│  updated_at      timestamptz            │
+│  current_status  text NOT NULL           │
+│  current_location text                   │
+│  current_bin     text                    │
+│  purchase_price  decimal (cached)        │
+│  ...instance fields...                  │
 └─────────────────────────────────────────┘
+          │              │              │
+          │ 1:N          │ 1:N          │ 1:N
+          ▼              ▼              ▼
+┌──────────────┐ ┌──────────────┐ ┌──────────────┐
+│ TRANSACTIONS │ │  MOVEMENTS   │ │   TASTINGS   │
+│ (Sub-Detail) │ │ (Sub-Detail) │ │ (Sub-Detail) │
+├──────────────┤ ├──────────────┤ ├──────────────┤
+│ bottle_id FK │ │ bottle_id FK │ │ bottle_id FK │
+│ type         │ │ from/to loc  │ │ rating       │
+│ date, price  │ │ moved_at     │ │ notes        │
+│ counterparty │ │ reason       │ │ tasting_stage│
+└──────────────┘ └──────────────┘ └──────────────┘
 ```
+
+### Nested Master-Detail Pattern
+
+Bottles serve a **dual role**:
+- **Detail** of Wine (many bottles → one wine product)
+- **Master** of Events (one bottle → many transactions/movements/tastings)
+
+This enables:
+- Full audit trail per bottle
+- Financial tracking (purchases, sales, valuations)
+- Location history (movements between cellars)
+- Tasting progression (multiple samples before consumption)
 
 ### Key Design Principle
 
-| Question | Master (Wine) | Detail (Bottle) |
-|----------|---------------|-----------------|
-| What is it? | ✅ Yes | ❌ No |
-| Where did I buy it? | ❌ No | ✅ Yes |
-| What does the critic say? | ✅ Yes | ❌ No |
-| What do I think? | ❌ No | ✅ Yes |
-| How many do I have? | ❌ No (compute) | ✅ Source of truth |
+| Question | Wine | Bottle | Event |
+|----------|------|--------|-------|
+| What is it? | ✅ | ❌ | ❌ |
+| Where is it now? | ❌ | ✅ (cached) | Source |
+| What did I pay? | ❌ | ✅ (cached) | Source |
+| How has it moved? | ❌ | ❌ | ✅ |
+| My tasting notes? | ❌ | ❌ | ✅ |
 
 ---
 
