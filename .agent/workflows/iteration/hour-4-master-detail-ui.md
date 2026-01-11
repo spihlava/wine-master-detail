@@ -7,89 +7,56 @@ description: Hour 4 - Create master-detail layout with generic components and re
 ## Goal
 Create generic layout components and apply premium styling to the wine/bottle interface.
 
-
-
 ## Success Criteria
 > [!IMPORTANT]
 > Verify each success criteria item and mark them as completed `[x]` in this file before proceeding to the next hour.
-- [ ] MasterDetailLayout component
+- [ ] MasterDetailLayout generic component
 - [ ] MasterCard generic component
-- [ ] DetailTable generic component
-- [ ] Unit tests for generic components
+- [ ] Detail generic components (Table, Section)
+- [ ] Integration with Wine Detail page
+- [ ] Responsive design verification
 
-## Testing Checklist
+## Implementation Steps
+
+### 1. Generic Layout Components (`src/components/generic/`)
+- Create `MasterDetailLayout.tsx`
+  - Grid layout: 100% width on mobile, 1/3 - 2/3 split on desktop (lg).
+  - Use `main` and `aside` semantic tags.
+- Create `MasterCard.tsx`
+  - Reusable card for the left column (image, title, subtitles, key fields).
+  - Glassmorphism styling (backdrop-blur, border-opacity).
+- Create `DetailSection.tsx`
+  - Container for right-column content sections.
+  - Title header with action buttons.
+
+### 2. Wine Components (`src/components/wine/`)
+- Refactor `WineDetail.tsx` to use `MasterDetailLayout`.
+- Create `WineMasterCard.tsx`
+  - Wrap `MasterCard` with wine specific data mappings.
+- Update `WineDetail` to render `BottleTable` inside a `DetailSection`.
+
+### 3. Styling & Micro-interactions
+- Apply "Premium" design tokens.
+  - Fonts: Inter/Geist (sans), Serif for headers if available.
+  - Colors: Wine/Slate palette.
+- Add hover effects to cards and rows.
+- Transitions: properties `all`, duration `200ms`.
+
+### 4. Data Seeding (Optional but recommended)
+- Ensure enough data exists to test scrolling and layout.
+- Manual entry of 5+ bottles via the new Add Bottle page.
+
+### 5. Verification
 > [!IMPORTANT]
-> This checklist must be completed before any of the Success Criteria are met.
+> The following checklist must be completed before marking the hour as done.
 
-- [ ] Generic layouts render correctlys and apply premium styling to the wine/bottle interface.
-- [ ] Wine-specific wrappers using generics
-- [ ] Responsive design (mobile-first)
-- [ ] Dark mode support
+- [ ] Generic layouts render correctly
+- [ ] Wine-specific wrappers using generics works
+- [ ] Responsive design (mobile-first) check
+    - [ ] Stacked on Mobile (< 768px)
+    - [ ] Split on Desktop (> 1024px)
+- [ ] Dark mode support checks
 - [ ] Screenshot of Master-Detail Layout (Desktop)
 - [ ] Screenshot of Master-Detail Layout (Mobile)
 - [ ] Screenshot of Dark Mode
-- [ ] Screenshot of Dark Mode
-- [ ] Test data imported (5+ wines, 20+ bottles)
-- [ ] All unit tests pass
-
-## Components to Create
-
-### Generic (`components/generic/`)
-```
-MasterDetailLayout.tsx - Grid layout (1/3 master, 2/3 detail on desktop)
-MasterCard.tsx - Card with title, subtitle, image, fields
-MasterSection.tsx - Left column container
-DetailSection.tsx - Right column container
-DetailTable.tsx - Generic table with headers/rows
-StatCard.tsx - Metric display (count, value)
-```
-
-### Wine-specific (`components/wine/`)
-```
-WineCard.tsx - Uses MasterCard with wine data
-WineDetail.tsx - Full wine view with MasterDetailLayout
-WineStats.tsx - Wine-specific aggregates
-```
-
-### 5. Data Seeding
-- Create a seed script or UI button to generate:
-  - 5+ Wines with varied types/regions
-  - 20+ Bottles distributed across wines
-  - Varied statuses (In Cellar, Consumed)
-
-## Layout Structure
-
-```
-┌─────────────────────────────────────────────────────┐
-│ Header / Navigation                                  │
-├─────────────────┬───────────────────────────────────┤
-│                 │                                   │
-│  Master Card    │       Detail Section              │
-│  (Wine Info)    │       (Bottles Table)             │
-│                 │                                   │
-│  ┌───────────┐  │  ┌─────────────────────────────┐  │
-│  │  Image    │  │  │  Bottle Table               │  │
-│  └───────────┘  │  │  - Row 1                    │  │
-│  Name, Vintage  │  │  - Row 2                    │  │
-│  Producer       │  │  - Row 3                    │  │
-│  Type, Region   │  │                             │  │
-│                 │  └─────────────────────────────┘  │
-│  Stats Cards    │                                   │
-│  [In Cellar]    │                                   │
-│  [Value]        │                                   │
-│                 │                                   │
-└─────────────────┴───────────────────────────────────┘
-```
-
-## Responsive Breakpoints
-- Mobile: Single column (master above detail)
-- Tablet (md): 1/3 + 2/3 grid
-- Desktop (lg): 1/3 + 2/3 grid with larger spacing
-
-## Styling Focus
-- Glassmorphism cards with subtle backdrop blur
-- Wine-themed color gradients
-- Smooth hover transitions (200ms)
-- Shadow elevation on hover
-
-## Time Box: 60 minutes
+- [ ] Test data present (5+ wines, 20+ bottles)

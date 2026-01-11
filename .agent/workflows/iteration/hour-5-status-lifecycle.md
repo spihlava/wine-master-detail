@@ -7,23 +7,44 @@ description: Hour 5 - Implement bottle status lifecycle with transitions and his
 ## Goal
 Implement proper status transitions, filtering, and consumption history.
 
-
-
 ## Success Criteria
 > [!IMPORTANT]
 > Verify each success criteria item and mark them as completed `[x]` in this file before proceeding to the next hour.
-- [ ] Status transition buttons (consume, gift, sell, damage)
-- [ ] Transition validation (only cellar → other)
-- [ ] Filter bottles by status
-- [ ] Consumption history view
-- [ ] Status statistics
-- [ ] Unit tests for status transition logic
+- [ ] Status transition logic (cellar -> others only)
+- [ ] StatusTransitionMenu component
+- [ ] BottleFilter component
+- [ ] ConsumptionHistory component
+- [ ] Integration with Wine Detail
 
-## Testing Checklist
+## Implementation Steps
+
+### 1. Logic & Validation (`src/lib/types/`, `src/lib/db/`)
+- Define helper functions in `src/lib/types/bottle.ts` or similar:
+  - `canTransition(from, to)`
+  - `getTransitionFields(to)` (e.g., date, price)
+- Ensure DB service handles status updates correctly (already partially done).
+
+### 2. Components (`src/components/bottle/`)
+- Create `StatusTransitionMenu.tsx`
+  - Dropdown menu for each bottle row.
+  - Disable options based on `canTransition`.
+- Create `BottleFilter.tsx`
+  - Tab or Pill selector: "All" | "In Cellar" | "History" (Consumed/Sold/etc).
+- Create `ConsumptionHistory.tsx`
+  - Specialized list view for consumed bottles showing rating/notes primarily.
+- Create `StatusStats.tsx`
+  - Simple row of counters (Total, Cellar, Consumed).
+
+### 3. UI Integration (`src/components/wine/WineDetail.tsx`)
+- Add `BottleFilter` above the `BottleTable`.
+- Conditionally render `BottleTable` (active) vs `ConsumptionHistory`.
+- Integrate `StatusStats` into the Wine Master Card or dedicated section.
+
+### 4. Verification
 > [!IMPORTANT]
-> This checklist must be completed before any of the Success Criteria are met.
+> The following checklist must be completed before marking the hour as done.
 
-- [ ] Status transitions obey rules
+- [ ] Status transitions obey rules (cannot consume an invalid bottle)
 - [ ] All transition data fields are captured correctly
 - [ ] Filtering by status works as expected
 - [ ] Consumption history displays all relevant data
@@ -32,41 +53,3 @@ Implement proper status transitions, filtering, and consumption history.
 - [ ] Screenshot of Consumption History
 - [ ] Screenshot of Status Badge
 - [ ] All unit tests pass
-
-## Status Flow
-```
-cellar → consumed (requires: consumed_date, optional: rating, notes)
-       → gifted   (optional: recipient notes)
-       → sold     (optional: sale price, buyer)
-       → damaged  (optional: reason)
-```
-
-## Components
-- StatusTransitionMenu - Dropdown with valid transitions
-- BottleFilter - Filter by status tabs
-- ConsumptionHistory - List of consumed bottles with ratings
-- StatusStats - Count by status
-
-## Validation Rules
-```typescript
-function canTransition(from: BottleStatus, to: BottleStatus): boolean {
-  return from === 'cellar' && to !== 'cellar';
-}
-
-function getTransitionData(to: BottleStatus) {
-  switch (to) {
-    case 'consumed':
-      return { consumed_date: new Date() };
-    default:
-      return {};
-  }
-}
-```
-
-## UI Enhancements
-- Color-coded status badges
-- Transition confirmation modals
-- Success toast notifications
-- Undo for recent transitions (soft delete pattern)
-
-## Time Box: 60 minutes

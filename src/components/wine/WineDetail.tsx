@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { Edit, Trash2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+import { BottleTable } from '@/components/bottle/BottleTable';
 
 export function WineDetail({ wineId }: { wineId: string }) {
     const router = useRouter();
@@ -106,6 +107,8 @@ export function WineDetail({ wineId }: { wineId: string }) {
                             </div>
                         </div>
                     </Card>
+
+                    <BottleTable wineId={wine.id} />
                 </div>
 
                 <div className="space-y-6">

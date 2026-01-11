@@ -173,6 +173,7 @@ function useWineStats(wineId: string) {
 - [ ] Manual testing of new features
 - [ ] No console errors in browser
 - [ ] Responsive on mobile viewport
+- [ ] All unit tests pass (`npm test`)
 
 ---
 

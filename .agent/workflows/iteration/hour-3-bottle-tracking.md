@@ -10,25 +10,23 @@ Implement bottle detail records with CRUD operations and integrate with wine det
 ## Success Criteria
 > [!IMPORTANT]
 > Verify each success criteria item and mark them as completed `[x]` in this file before proceeding to the next hour.
-- [ ] Add bottles to a wine
-- [ ] View all bottles for a wine
-- [ ] Edit bottle status/location
-- [ ] Unit tests for bottle service/hooks
-
-## Testing Checklist
-> [!IMPORTANT]
-> This checklist must be completed before any of the Success Criteria are met.
-
-- [ ] `npm run dev` starts without errors
-- [ ] Delete bottles
-- [ ] Consume bottle workflow
-- [ ] Bottle count on wine view
-- [ ] Screenshot of Bottle Table populated with data
-- [ ] Screenshot of Bottle Table populated with data
-- [ ] Screenshot of Consume Modal
-- [ ] All unit tests pass
+- [x] Add bottles to a wine
+- [x] View all bottles for a wine
+- [x] Edit bottle status/location
+- [x] Unit tests for bottle service/hooks
 
 ## Steps
+> [!IMPORTANT]
+> The following checklist must be completed before marking the hour as done.
+
+- [x] `npm run dev` starts without errors
+- [x] Delete bottles
+- [x] Consume bottle workflow
+- [x] Bottle count on wine view
+- [x] Screenshot of Bottle Table populated with data
+- [x] Screenshot of Bottle Table populated with data
+- [x] Screenshot of Consume Modal
+- [x] All unit tests pass
 
 ### 1. Bottle Service (`src/lib/db/bottles.ts`)
 - getBottles(wineId)
@@ -53,6 +51,19 @@ Implement bottle detail records with CRUD operations and integrate with wine det
 
 ### 4. Integration
 Update WineDetail to include BottleTable below wine info.
+
+### 5. Verification
+> [!IMPORTANT]
+> The following checklist must be completed before marking the hour as done.
+
+- [x] `npm run dev` starts without errors
+- [x] Delete bottles
+- [x] Consume bottle workflow
+- [x] Bottle count on wine view
+- [x] Screenshot of Bottle Table populated with data
+- [x] Screenshot of Bottle Table populated with data
+- [x] Screenshot of Consume Modal
+- [x] All unit tests pass
 
 ## Key Code Patterns
 

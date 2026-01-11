@@ -10,75 +10,41 @@ Create computed statistics from bottle data and build a cellar dashboard.
 ## Success Criteria
 > [!IMPORTANT]
 > Verify each success criteria item and mark them as completed `[x]` in this file before proceeding to the next hour.
-- [ ] useWineStats hook (count, value, avg rating)
-- [ ] Cellar overview dashboard
-- [ ] Drinking window alerts
-- [ ] Unit tests for stats computation
+- [ ] useWineStats hook implemented
+- [ ] useCellarStats hook implemented
+- [ ] Dashboard page created
+- [ ] Dashboard components (Overview, Drink Soon, Distribution)
+- [ ] Unit tests for stats logic
 
-## Testing Checklist
+## Implementation Steps
+
+### 1. Hooks & Logic (`src/lib/hooks/`)
+- Create `useWineStats(wineId)`
+  - Computes: Total bottles, In Cellar, Consumed, Cellar Value, Avg Rating.
+- Create `useCellarStats()`
+  - Computes global stats: Total bottles, Total Value, Unique Wines.
+  - Aggregates by Type (Red, White, etc.).
+  - Filters "Drinking Soon" (end_consume <= current_year + 2).
+
+### 2. Dashboard Components (`src/components/dashboard/`)
+- `CellarOverview.tsx`: Grid of `StatCard`s (Total Bottles, Value, etc.).
+- `DrinkingSoonList.tsx`: List/Table of wines nearing their drinking window end.
+- `TypeDistribution.tsx`: Simple visual (bar or list) showing count by wine type.
+- `ValueTrend.tsx` (Optional): Placeholder for future value history.
+
+### 3. Integration (`src/app/page.tsx`)
+- Update the home page to be the Dashboard.
+- Section 1: Cellar Overview.
+- Section 2: Drinking Soon Alerts.
+- Section 3: Distribution / Quick Actions.
+
+### 4. Verification
 > [!IMPORTANT]
-> This checklist must be completed before any of the Success Criteria are met.
+> The following checklist must be completed before marking the hour as done.
 
-- [ ] Dashboard stats match database
-- [ ] Value tracking
-- [ ] Basic charts/visualizations
+- [ ] Dashboard stats match database values
+- [ ] Value tracking is accurate (sum of purchase prices)
+- [ ] Basic charts/visualizations render
 - [ ] Screenshot of Dashboard
 - [ ] Screenshot of Drinking Window Alerts
 - [ ] All unit tests pass
-
-
-
-## Key Computations
-
-```typescript
-interface WineStats {
-  total: number;
-  inCellar: number;
-  consumed: number;
-  cellarValue: number;
-  avgRating: number | null;
-}
-
-interface CellarStats {
-  totalBottles: number;
-  uniqueWines: number;
-  totalValue: number;
-  byType: Record<WineType, number>;
-  byStatus: Record<BottleStatus, number>;
-  drinkingSoon: Wine[];  // end_consume within 2 years
-}
-```
-
-## useWineStats Hook
-```typescript
-function useWineStats(wineId: string) {
-  const { data: bottles } = useBottles(wineId);
-  return useMemo(() => computeStats(bottles || []), [bottles]);
-}
-```
-
-## Dashboard Components
-- CellarOverview - Total stats summary
-- DrinkingSoonList - Wines approaching end of window
-- TypeDistribution - Pie/bar chart by wine type
-- ValueTrend - (Future) Track cellar value over time
-
-## Queries for Dashboard
-```sql
--- Cellar summary
-SELECT COUNT(*), SUM(price) FROM bottles WHERE status = 'cellar';
-
--- Drink soon
-SELECT w.* FROM wines w
-JOIN bottles b ON b.wine_id = w.id
-WHERE b.status = 'cellar' 
-  AND w.end_consume <= YEAR(NOW()) + 2;
-
--- By type
-SELECT w.type, COUNT(b.id)
-FROM wines w JOIN bottles b ON b.wine_id = w.id
-WHERE b.status = 'cellar'
-GROUP BY w.type;
-```
-
-## Time Box: 60 minutes
