@@ -8,6 +8,8 @@ description: Hour 3 - Implement bottle tracking with CRUD operations and master-
 Implement bottle detail records with CRUD operations and integrate with wine detail page.
 
 ## Success Criteria
+> [!IMPORTANT]
+> Verify each success criteria item and mark them as completed `[x]` in this file before proceeding to the next hour.
 - [ ] Add bottles to a wine
 - [ ] View all bottles for a wine
 - [ ] Edit bottle status/location

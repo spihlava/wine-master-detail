@@ -8,6 +8,8 @@ description: Hour 4 - Create master-detail layout with generic components and re
 Create generic layout components and apply premium styling to the wine/bottle interface.
 
 ## Success Criteria
+> [!IMPORTANT]
+> Verify each success criteria item and mark them as completed `[x]` in this file before proceeding to the next hour.
 - [ ] MasterDetailLayout component
 - [ ] MasterCard generic component
 - [ ] DetailTable generic component

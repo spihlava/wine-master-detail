@@ -8,6 +8,8 @@ description: Hour 2 - Implement Wine CRUD operations with service layer, hooks, 
 Create complete CRUD operations for wine master records with proper service layer, React hooks, and basic UI.
 
 ## Success Criteria
+> [!IMPORTANT]
+> Verify each success criteria item and mark them as completed `[x]` in this file before proceeding to the next hour.
 - [ ] Wine service layer with getWines, getWine, createWine, updateWine, deleteWine
 - [ ] React Query hooks for all operations
 - [ ] Wine list page with search/filter

@@ -8,6 +8,8 @@ description: Hour 5 - Implement bottle status lifecycle with transitions and his
 Implement proper status transitions, filtering, and consumption history.
 
 ## Success Criteria
+> [!IMPORTANT]
+> Verify each success criteria item and mark them as completed `[x]` in this file before proceeding to the next hour.
 - [ ] Status transition buttons (consume, gift, sell, damage)
 - [ ] Transition validation (only cellar → other)
 - [ ] Filter bottles by status

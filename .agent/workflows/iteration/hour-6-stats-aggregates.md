@@ -8,6 +8,8 @@ description: Hour 6 - Implement computed stats, aggregates, and dashboard
 Create computed statistics from bottle data and build a cellar dashboard.
 
 ## Success Criteria
+> [!IMPORTANT]
+> Verify each success criteria item and mark them as completed `[x]` in this file before proceeding to the next hour.
 - [ ] useWineStats hook (count, value, avg rating)
 - [ ] Cellar overview dashboard
 - [ ] Drinking window alerts

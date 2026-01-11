@@ -8,12 +8,15 @@ description: Hour 0 - Initialize project structure, dependencies, and environmen
 Initialize the Next.js application, set up the development environment, and configure the core technologies (TypeScript, Tailwind CSS, Supabase).
 
 ## Success Criteria
-- [ ] Next.js application scaffolded with TypeScript and App Router
-- [ ] Core dependencies installed (Supabase, React Query, Zod)
-- [ ] Environment variables configured (.env.local)
-- [ ] Project directory structure organized
-- [ ] Linting and formatting configurations active
-- [ ] Application successfully builds and runs locally
+> [!IMPORTANT]
+> Verify each success criteria item and mark them as completed `[x]` in this file before proceeding to the next hour.
+
+- [x] Next.js application scaffolded with TypeScript and App Router
+- [x] Core dependencies installed (Supabase, React Query, Zod)
+- [x] Environment variables configured (.env.local)
+- [x] Project directory structure organized
+- [x] Linting and formatting configurations active
+- [x] Application successfully builds and runs locally
 
 ## Prerequisites
 - Node.js 18+ installed
