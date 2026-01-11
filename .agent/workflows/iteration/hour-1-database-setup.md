@@ -413,6 +413,9 @@ JOIN bottles b ON b.wine_id = w.id;
 ```
 
 ## Testing Checklist
+> [!IMPORTANT]
+> This checklist must be completed before any of the Success Criteria are met.
+
 - [x] Next.js project created and running (`npm run dev`)
 - [x] Supabase connection works (no errors in console)
 - [x] Wines table accepts inserts

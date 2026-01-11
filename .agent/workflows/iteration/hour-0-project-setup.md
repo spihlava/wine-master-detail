@@ -94,6 +94,9 @@ npm run dev
 ```
 
 ## Testing Checklist
+> [!IMPORTANT]
+> This checklist must be completed before any of the Success Criteria are met.
+
 - [x] `npm run dev` starts without errors
 - [x] Home page loads at http://localhost:3000
 - [x] Directory structure exists under `src/`

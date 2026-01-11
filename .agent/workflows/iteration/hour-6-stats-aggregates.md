@@ -16,6 +16,12 @@ Create computed statistics from bottle data and build a cellar dashboard.
 - [ ] Value tracking
 - [ ] Basic charts/visualizations
 
+## Testing Checklist
+> [!IMPORTANT]
+> This checklist must be completed before any of the Success Criteria are met.
+
+- [ ] Dashboard stats match database
+
 ## Key Computations
 
 ```typescript

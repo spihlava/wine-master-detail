@@ -55,6 +55,12 @@ consumeBottle.mutate({
 });
 ```
 
+## Testing Checklist
+> [!IMPORTANT]
+> This checklist must be completed before any of the Success Criteria are met.
+
+- [ ] `npm run dev` starts without errorstable
+
 ## Testing
 - Add bottle → appears in table
 - Delete bottle → removed

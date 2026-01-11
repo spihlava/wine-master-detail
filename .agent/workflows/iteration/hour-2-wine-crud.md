@@ -507,6 +507,10 @@ export default config
 Install forms plugin: `npm install -D @tailwindcss/forms`
 
 ## Testing Checklist
+> [!IMPORTANT]
+> This checklist must be completed before any of the Success Criteria are met.
+
+- [ ] `npm run dev` starts without errorsm database
 - [ ] Wine list shows all wines from database
 - [ ] Can create a new wine (form validates, saves to DB)
 - [ ] Wine appears in list after creation
