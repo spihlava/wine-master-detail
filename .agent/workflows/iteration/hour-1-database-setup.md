@@ -194,7 +194,85 @@ CREATE TRIGGER update_bottles_updated_at
 COMMENT ON TABLE bottles IS 'Detail records for physical bottle instances. Many bottles per wine. Tracks inventory, location, and personal notes.';
 ```
 
-### 6. Create Supabase Client
+### 6. Create Event Tables (Sub-Details)
+
+Run in Supabase SQL Editor:
+
+```sql
+-- 1. Create Bottle Transactions
+CREATE TABLE bottle_transactions (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  bottle_id uuid NOT NULL REFERENCES bottles(id) ON DELETE CASCADE,
+  transaction_type text NOT NULL CHECK (transaction_type IN ('purchase', 'sale', 'gift_received', 'gift_given', 'valuation')),
+  transaction_date date NOT NULL,
+  price decimal(10,2),
+  counterparty text,
+  notes text,
+  created_at timestamptz DEFAULT now() NOT NULL
+);
+CREATE INDEX idx_transactions_bottle ON bottle_transactions(bottle_id);
+
+-- 2. Create Bottle Movements
+CREATE TABLE bottle_movements (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  bottle_id uuid NOT NULL REFERENCES bottles(id) ON DELETE CASCADE,
+  from_location text,
+  to_location text NOT NULL,
+  from_bin text,
+  to_bin text,
+  moved_at timestamptz NOT NULL DEFAULT now(),
+  reason text,
+  notes text,
+  created_at timestamptz DEFAULT now() NOT NULL
+);
+CREATE INDEX idx_movements_bottle ON bottle_movements(bottle_id);
+
+-- 3. Create Bottle Tastings
+CREATE TABLE bottle_tastings (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  bottle_id uuid NOT NULL REFERENCES bottles(id) ON DELETE CASCADE,
+  tasted_at date NOT NULL,
+  rating integer CHECK (rating IS NULL OR (rating >= 0 AND rating <= 100)),
+  notes text,
+  food_pairing text,
+  occasion text,
+  tasting_stage text NOT NULL DEFAULT 'consumed' CHECK (tasting_stage IN ('sample', 'consumed')),
+  created_at timestamptz DEFAULT now() NOT NULL
+);
+CREATE INDEX idx_tastings_bottle ON bottle_tastings(bottle_id);
+
+-- 4. Create Triggers for Auto-Updates
+CREATE OR REPLACE FUNCTION on_tasting_consumed() RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.tasting_stage = 'consumed' THEN
+    UPDATE bottles SET current_status = 'consumed', consumed_date = NEW.tasted_at WHERE id = NEW.bottle_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER tasting_consumed_trigger AFTER INSERT ON bottle_tastings FOR EACH ROW EXECUTE FUNCTION on_tasting_consumed();
+
+CREATE OR REPLACE FUNCTION on_bottle_movement() RETURNS TRIGGER AS $$
+BEGIN
+  UPDATE bottles SET current_location = NEW.to_location, current_bin = NEW.to_bin WHERE id = NEW.bottle_id;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER movement_update_trigger AFTER INSERT ON bottle_movements FOR EACH ROW EXECUTE FUNCTION on_bottle_movement();
+
+CREATE OR REPLACE FUNCTION on_bottle_transaction() RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.transaction_type = 'sale' THEN UPDATE bottles SET current_status = 'sold' WHERE id = NEW.bottle_id;
+  ELSIF NEW.transaction_type = 'gift_given' THEN UPDATE bottles SET current_status = 'gifted' WHERE id = NEW.bottle_id;
+  ELSIF NEW.transaction_type = 'valuation' THEN UPDATE bottles SET current_value = NEW.price WHERE id = NEW.bottle_id;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+CREATE TRIGGER transaction_update_trigger AFTER INSERT ON bottle_transactions FOR EACH ROW EXECUTE FUNCTION on_bottle_transaction();
+```
+
+### 7. Create Supabase Client
 
 Create `src/lib/db/supabase.ts`:
 
@@ -208,7 +286,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
 ```
 
-### 7. Generate TypeScript Types
+### 8. Generate TypeScript Types
 
 // turbo
 ```bash
@@ -217,7 +295,7 @@ npx supabase gen types typescript --project-id YOUR_PROJECT_ID > src/lib/db/data
 
 Or use the Supabase Dashboard: Settings > API > Generate Types
 
-### 8. Create Zod Schemas
+### 9. Create Zod Schemas
 
 Create `src/lib/types/wine.ts`:
 
@@ -313,7 +391,7 @@ export const bottleUpdateSchema = bottleInsertSchema.partial().omit({
 export type BottleUpdate = z.infer<typeof bottleUpdateSchema>;
 ```
 
-### 9. Verify Setup
+### 10. Verify Setup
 
 Test by inserting sample data in Supabase SQL Editor:
 
