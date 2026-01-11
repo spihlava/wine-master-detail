@@ -100,11 +100,33 @@ This project uses hour-based iterations. Each workflow in `.agent/workflows/iter
 
 ## 🏗 Architecture Principles
 
-1. **Master-Detail Boundary**: Wine = product data, Bottle = your data
-2. **Computed Aggregates**: Never store counts, always compute from bottles
-3. **Generic Patterns**: UI components work for any master-detail domain
-4. **Type Safety**: Zod validation at all I/O boundaries
-5. **Service Layer**: No direct Supabase calls in components
+### 1. Strict Master-Detail Separation
+We strictly separate **Product Data** (The Wine) from **Inventory Data** (The Bottle).
+- **Master (Wine):** Immutable facts about the product (Producer, Vintage, Varietal, Region). Shared by all bottles.
+- **Detail (Bottle):** Mutable state of your specific instance (Location, Purchase Price, Status, Notes).
+*Benefit: This normalization prevents data duplication and allows bulk operations (e.g., "Add Case") without redundant data entry.*
+
+### 2. Computed Aggregates & Single Source of Truth
+We never store derived data like `bottle_count` or `total_value` in the Wine record.
+- **Rule:** Aggregates are calculated on-the-fly from the `bottles` table using SQL `count()` or `sum()`.
+*Benefit: Eliminates synchronization bugs where the counter gets out of sync with the actual rows.*
+
+### 3. Server-First Data Flow
+Leveraging Next.js App Router and React Server Components (RSC).
+- **Read:** Server Components fetch data directly from Supabase (via the service layer) and pass typed props to the UI.
+- **Write:** Client Components invoke Server Actions or API routes, which then invalidate the cache.
+*Benefit: Reduces client-side JavaScript, improves initial load performance, and simplifies security.*
+
+### 4. End-to-End Type Safety
+Trust nothing; validate everything.
+- **Database:** PostgreSQL constraints (Foreign Keys, Check Constraints).
+- **Boundary:** Zod schemas validate all data entering/leaving the application (DB results, Form inputs).
+- **Code:** TypeScript Strict Mode ensures compile-time correctness based on the Zod schemas.
+
+### 5. Domain-Agnostic UI Patterns
+We separate the "Shape" of the UI from the "Content" of the domain.
+- **Generic Components:** `MasterDetailLayout`, `StatusBadge`, `StatCard` handle the *look*.
+- **Domain Wrappers:** `WineCard`, `BottleRow` handle the *data* and pass it to generic components.
 
 ## 📜 License
 

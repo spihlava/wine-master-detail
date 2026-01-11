@@ -1,0 +1,120 @@
+---
+description: Hour 0 - Initialize project structure, dependencies, and environment
+---
+
+# Hour 0: Project Setup
+
+## Goal
+Initialize the Next.js application, set up the development environment, and configure the core technologies (TypeScript, Tailwind CSS, Supabase).
+
+## Success Criteria
+- [ ] Next.js application scaffolded with TypeScript and App Router
+- [ ] Core dependencies installed (Supabase, React Query, Zod)
+- [ ] Environment variables configured (.env.local)
+- [ ] Project directory structure organized
+- [ ] Linting and formatting configurations active
+- [ ] Application successfully builds and runs locally
+
+## Prerequisites
+- Node.js 18+ installed
+- npm installed
+- Git initialized
+
+## Implementation Steps
+
+### 1. Scaffold Next.js Application
+
+Initialize the project in the current directory.
+
+```bash
+npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias "@/*" --no-turbopack
+```
+*Note: Accept the prompts to create the project in the current directory if asked.*
+
+### 2. Install Core Dependencies
+
+Install the essential libraries for the architecture.
+
+```bash
+npm install @supabase/supabase-js @tanstack/react-query zod clsx tailwind-merge lucide-react
+```
+
+- `@supabase/supabase-js`: Official Supabase client
+- `@tanstack/react-query`: Server state management
+- `zod`: Runtime schema validation
+- `clsx` & `tailwind-merge`: Utility for conditional classes
+- `lucide-react`: Icon set
+
+### 3. Configure Environment Variables
+
+Create `.env.local` in the project root:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=your_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+```
+
+### 4. Setup Project Structure
+
+Ensure the directory structure matches the architecture plan:
+
+```bash
+mkdir -p src/lib/db
+mkdir -p src/lib/hooks
+mkdir -p src/lib/types
+mkdir -p src/lib/utils
+mkdir -p src/components/generic
+mkdir -p src/components/wine
+mkdir -p src/components/bottle
+mkdir -p src/components/ui
+```
+
+### 5. Create Utility Functions
+
+Create `src/lib/utils/cn.ts` for Tailwind class merging:
+
+```typescript
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+```
+
+### 6. Verify Installation
+
+Run the development server to ensure everything is connected.
+
+```bash
+npm run dev
+```
+
+## Testing Checklist
+- [ ] `npm run dev` starts without errors
+- [ ] Home page loads at http://localhost:3000
+- [ ] Directory structure exists under `src/`
+- [ ] `package.json` contains all installed dependencies
+- [ ] Tailwind CSS is working (edit page.tsx to test a class)
+
+## Deliverables
+- Initialized Next.js codebase
+- `package.json` with dependencies
+- `.env.local` file (template)
+- `src` directory with subfolders
+
+## Time Box
+30 minutes
+
+## Next Hour
+Hour 1: Database Setup (Supabase schema, types, Zod)
+
+## Troubleshooting
+
+### "Directory not empty" error
+- If `create-next-app` complains about existing files (like README.md), use the `--use-npm` flag or clear the directory (except .agent and .git) before running.
+- Alternatively, move the existing docs to a temporary folder, init the app, and move them back.
+
+### Tailwind not working
+- Verify `tailwind.config.ts` content matches the `src` directory structure.
+- Ensure `globals.css` imports tailwind directives.
