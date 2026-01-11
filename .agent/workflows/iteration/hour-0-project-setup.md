@@ -94,11 +94,11 @@ npm run dev
 ```
 
 ## Testing Checklist
-- [ ] `npm run dev` starts without errors
-- [ ] Home page loads at http://localhost:3000
-- [ ] Directory structure exists under `src/`
-- [ ] `package.json` contains all installed dependencies
-- [ ] Tailwind CSS is working (edit page.tsx to test a class)
+- [x] `npm run dev` starts without errors
+- [x] Home page loads at http://localhost:3000
+- [x] Directory structure exists under `src/`
+- [x] `package.json` contains all installed dependencies
+- [x] Tailwind CSS is working (edit page.tsx to test a class)
 
 ## Deliverables
 - Initialized Next.js codebase
