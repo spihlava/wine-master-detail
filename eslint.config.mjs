@@ -17,8 +17,33 @@ const eslintConfig = defineConfig([
     rules: {
       // Allow console.error and console.warn, warn on console.log
       "no-console": ["warn", { allow: ["warn", "error"] }],
-      // Disable strict import ordering
-      "import/order": "off",
+      // Enforce consistent import ordering
+      "import/order": [
+        "warn",
+        {
+          groups: [
+            "builtin",
+            "external",
+            "internal",
+            ["parent", "sibling"],
+            "index",
+            "type",
+          ],
+          "newlines-between": "never",
+          alphabetize: { order: "asc", caseInsensitive: true },
+        },
+      ],
+      // Disallow unused variables (warning level to not break builds)
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
+      ],
+      // Prefer const over let when variable is not reassigned
+      "prefer-const": "warn",
+      // Enforce consistent return types
+      "@typescript-eslint/explicit-function-return-type": "off",
+      // Allow any in specific cases but warn
+      "@typescript-eslint/no-explicit-any": "warn",
     },
   },
 ]);

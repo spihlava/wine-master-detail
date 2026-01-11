@@ -44,7 +44,8 @@ export type WineInsert = z.infer<typeof wineInsertSchema>;
 export const wineUpdateSchema = wineInsertSchema.partial();
 export type WineUpdate = z.infer<typeof wineUpdateSchema>;
 
-// Computed Types
+// Computed Types - Reserved for future cellar statistics feature
+// These types will be used when implementing the dashboard/stats view
 export interface WineStats {
     total: number;
     inCellar: number;

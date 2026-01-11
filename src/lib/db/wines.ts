@@ -15,7 +15,7 @@ export async function getWines(): Promise<Wine[]> {
         .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data.map(row => wineSchema.parse(row));
+    return (data || []).map(row => wineSchema.parse(row));
 }
 
 export async function getWine(id: string): Promise<Wine> {
@@ -26,6 +26,8 @@ export async function getWine(id: string): Promise<Wine> {
         .single();
 
     if (error) {
+        // PGRST116: "JSON object requested, multiple (or no) rows returned"
+        // This occurs when .single() finds no matching row
         if (error.code === 'PGRST116') throw new WineNotFoundError(id);
         throw error;
     }
@@ -77,12 +79,17 @@ export async function deleteWine(id: string): Promise<void> {
 
 // Search wines by name, producer, or region
 export async function searchWines(query: string): Promise<Wine[]> {
+    // Sanitize the query to prevent filter injection
+    // Remove any characters that could break the PostgREST filter syntax
+    const sanitized = query.replace(/[%,()]/g, '').trim();
+    if (!sanitized) return [];
+
     const { data, error } = await supabase
         .from('wines')
         .select('*')
-        .or(`name.ilike.%${query}%,producer.ilike.%${query}%,region.ilike.%${query}%`)
+        .or(`name.ilike.%${sanitized}%,producer.ilike.%${sanitized}%,region.ilike.%${sanitized}%`)
         .order('name', { ascending: true });
 
     if (error) throw error;
-    return data.map(row => wineSchema.parse(row));
+    return (data || []).map(row => wineSchema.parse(row));
 }

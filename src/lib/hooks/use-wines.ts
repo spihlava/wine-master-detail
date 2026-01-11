@@ -2,11 +2,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getWines, getWine, createWine, updateWine, deleteWine, searchWines } from '../db/wines';
 import type { WineInsert, WineUpdate } from '../types/wine';
 
-// Query Keys
+// Query Keys - factory pattern for consistent cache keys
 export const wineKeys = {
     all: ['wines'] as const,
     lists: () => [...wineKeys.all, 'list'] as const,
-    list: (filters: string) => [...wineKeys.lists(), { filters }] as const,
     details: () => [...wineKeys.all, 'detail'] as const,
     detail: (id: string) => [...wineKeys.details(), id] as const,
     search: (query: string) => [...wineKeys.all, 'search', query] as const,

@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useId } from 'react';
 import { Bottle } from '@/lib/types/bottle';
 import { StatusBadge } from '@/components/generic/StatusBadge';
 import { Button } from '@/components/ui/Button';
 import { ConsumeModal } from './ConsumeModal';
 import { useDeleteBottle, useUpdateBottle } from '@/lib/hooks/use-bottles';
+import { useToast } from '@/components/ui/Toast';
 import { Trash2, Wine, MapPin } from 'lucide-react';
 
 interface BottleRowProps {
@@ -18,20 +19,44 @@ export const BottleRow: React.FC<BottleRowProps> = ({ bottle }) => {
     const [location, setLocation] = useState(bottle.location || '');
     const [bin, setBin] = useState(bottle.bin || '');
 
+    const locationId = useId();
+    const binId = useId();
+    const { showToast } = useToast();
+
+    // Sync local state when bottle prop changes
+    useEffect(() => {
+        setLocation(bottle.location || '');
+        setBin(bottle.bin || '');
+    }, [bottle.location, bottle.bin]);
+
     const deleteBottle = useDeleteBottle(bottle.wine_id);
     const updateBottle = useUpdateBottle(bottle.wine_id);
 
     const handleDelete = () => {
         if (confirm('Are you sure you want to delete this bottle?')) {
-            deleteBottle.mutate(bottle.id);
+            deleteBottle.mutate(bottle.id, {
+                onSuccess: () => showToast('Bottle deleted', 'success'),
+                onError: (error) => showToast(error instanceof Error ? error.message : 'Failed to delete', 'error'),
+            });
         }
     };
 
     const handleLocationUpdate = () => {
         updateBottle.mutate({
             id: bottle.id,
-            updates: { location, bin }
+            updates: { location: location.trim(), bin: bin.trim() }
+        }, {
+            onSuccess: () => {
+                showToast('Location updated', 'success');
+                setIsEditing(false);
+            },
+            onError: (error) => showToast(error instanceof Error ? error.message : 'Failed to update', 'error'),
         });
+    };
+
+    const handleCancelEdit = () => {
+        setLocation(bottle.location || '');
+        setBin(bottle.bin || '');
         setIsEditing(false);
     };
 
@@ -48,26 +73,44 @@ export const BottleRow: React.FC<BottleRowProps> = ({ bottle }) => {
             <td className="px-6 py-4 whitespace-nowrap">
                 {isEditing ? (
                     <div className="flex space-x-2 items-center">
-                        <input
-                            type="text"
-                            value={location}
-                            onChange={(e) => setLocation(e.target.value)}
-                            placeholder="Loc"
-                            className="w-20 px-2 py-1 text-sm border rounded"
-                        />
-                        <input
-                            type="text"
-                            value={bin}
-                            onChange={(e) => setBin(e.target.value)}
-                            placeholder="Bin"
-                            className="w-16 px-2 py-1 text-sm border rounded"
-                        />
-                        <Button size="sm" className="h-7 px-2 text-xs" onClick={handleLocationUpdate}>Save</Button>
+                        <div>
+                            <label htmlFor={locationId} className="sr-only">Location</label>
+                            <input
+                                id={locationId}
+                                type="text"
+                                value={location}
+                                onChange={(e) => setLocation(e.target.value)}
+                                placeholder="Location"
+                                aria-label="Location"
+                                className="w-24 px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-wine-500"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor={binId} className="sr-only">Bin</label>
+                            <input
+                                id={binId}
+                                type="text"
+                                value={bin}
+                                onChange={(e) => setBin(e.target.value)}
+                                placeholder="Bin"
+                                aria-label="Bin"
+                                className="w-20 px-2 py-1 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-wine-500"
+                            />
+                        </div>
+                        <Button size="sm" className="h-7 px-2 text-xs" onClick={handleLocationUpdate} disabled={updateBottle.isPending}>
+                            {updateBottle.isPending ? '...' : 'Save'}
+                        </Button>
+                        <Button size="sm" variant="ghost" className="h-7 px-2 text-xs" onClick={handleCancelEdit}>
+                            Cancel
+                        </Button>
                     </div>
                 ) : (
-                    <div
-                        className="flex items-center space-x-2 cursor-pointer group"
+                    <button
+                        type="button"
+                        className="flex items-center space-x-2 group text-left"
                         onClick={() => bottle.status === 'cellar' && setIsEditing(true)}
+                        disabled={bottle.status !== 'cellar'}
+                        aria-label={bottle.status === 'cellar' ? 'Click to edit location' : undefined}
                     >
                         <span className="text-sm text-slate-900">
                             {bottle.location || 'No Location'}
@@ -76,7 +119,7 @@ export const BottleRow: React.FC<BottleRowProps> = ({ bottle }) => {
                         {bottle.status === 'cellar' && (
                             <MapPin className="w-3 h-3 text-slate-400 opacity-0 group-hover:opacity-100" />
                         )}
-                    </div>
+                    </button>
                 )}
             </td>
             <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">

@@ -3,65 +3,115 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCreateWine, useUpdateWine } from '@/lib/hooks/use-wines';
-import type { Wine, WineInsert, WineType } from '@/lib/types/wine';
+import type { Wine, WineType } from '@/lib/types/wine';
+import { wineInsertSchema, wineTypeEnum } from '@/lib/types/wine';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
 import { Card } from '@/components/ui/Card';
+import { useToast } from '@/components/ui/Toast';
 
 interface WineFormProps {
     wine?: Wine;
 }
 
-const WINE_TYPES: { value: string; label: string }[] = [
-    { value: 'Red', label: 'Red' },
-    { value: 'White', label: 'White' },
-    { value: 'Rosé', label: 'Rosé' },
-    { value: 'Sparkling', label: 'Sparkling' },
-    { value: 'Dessert', label: 'Dessert' },
-    { value: 'Fortified', label: 'Fortified' },
-];
+const WINE_TYPES: { value: string; label: string }[] = wineTypeEnum.options.map(type => ({
+    value: type,
+    label: type,
+}));
 
 export function WineForm({ wine }: WineFormProps) {
     const router = useRouter();
+    const { showToast } = useToast();
     const createWine = useCreateWine();
     const updateWine = useUpdateWine(wine?.id || '');
 
-    const [formData, setFormData] = useState<Partial<WineInsert>>({
+    const [formData, setFormData] = useState({
         name: wine?.name || '',
         producer: wine?.producer || '',
-        vintage: wine?.vintage || null,
-        type: wine?.type || null,
+        vintage: wine?.vintage || null as number | null,
+        type: wine?.type || null as WineType | null,
         varietal: wine?.varietal || '',
         country: wine?.country || '',
         region: wine?.region || '',
         appellation: wine?.appellation || '',
-        abv: wine?.abv || null,
+        abv: wine?.abv || null as number | null,
     });
 
     const [errors, setErrors] = useState<Record<string, string>>({});
 
     const validate = () => {
         const newErrors: Record<string, string> = {};
-        if (!formData.name) newErrors.name = 'Name is required';
+
+        // Trim and prepare data for validation
+        const trimmedData = {
+            ...formData,
+            name: formData.name.trim(),
+            producer: formData.producer?.trim() || null,
+            varietal: formData.varietal?.trim() || null,
+            country: formData.country?.trim() || null,
+            region: formData.region?.trim() || null,
+            appellation: formData.appellation?.trim() || null,
+        };
+
+        // Use Zod for validation
+        const result = wineInsertSchema.safeParse(trimmedData);
+
+        if (!result.success) {
+            result.error.issues.forEach(issue => {
+                const field = issue.path[0] as string;
+                newErrors[field] = issue.message;
+            });
+        }
+
+        // Additional custom validations
+        if (!trimmedData.name) {
+            newErrors.name = 'Name is required';
+        }
+        if (formData.vintage !== null && (formData.vintage < 1800 || formData.vintage > 2100)) {
+            newErrors.vintage = 'Vintage must be between 1800 and 2100';
+        }
+        if (formData.abv !== null && (formData.abv < 0 || formData.abv > 100)) {
+            newErrors.abv = 'ABV must be between 0 and 100';
+        }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!validate()) return;
+        if (!validate()) {
+            showToast('Please fix the errors in the form', 'error');
+            return;
+        }
+
+        // Prepare clean data with trimmed strings
+        const cleanData = {
+            name: formData.name.trim(),
+            producer: formData.producer?.trim() || null,
+            vintage: formData.vintage,
+            type: formData.type,
+            varietal: formData.varietal?.trim() || null,
+            country: formData.country?.trim() || null,
+            region: formData.region?.trim() || null,
+            appellation: formData.appellation?.trim() || null,
+            abv: formData.abv,
+        };
 
         try {
             if (wine) {
-                await updateWine.mutateAsync(formData);
+                await updateWine.mutateAsync(cleanData);
+                showToast('Wine updated successfully', 'success');
             } else {
-                await createWine.mutateAsync(formData as WineInsert);
+                await createWine.mutateAsync(cleanData);
+                showToast('Wine added successfully', 'success');
             }
             router.push('/wines');
         } catch (error) {
+            const message = error instanceof Error ? error.message : 'Failed to save wine';
+            showToast(message, 'error');
             console.error('Error saving wine:', error);
-            // In a real app, show a toast here
         }
     };
 

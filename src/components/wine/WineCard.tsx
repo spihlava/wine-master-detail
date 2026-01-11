@@ -1,8 +1,9 @@
 import Link from 'next/link';
+import React, { memo } from 'react';
 import type { Wine } from '@/lib/types/wine';
 import { Card } from '@/components/ui/Card';
 
-export function WineCard({ wine }: { wine: Wine }) {
+export const WineCard = memo(function WineCard({ wine }: { wine: Wine }) {
     return (
         <Link href={`/wines/${wine.id}`}>
             <Card className="hover:shadow-md transition-shadow h-full cursor-pointer group">
@@ -42,4 +43,4 @@ export function WineCard({ wine }: { wine: Wine }) {
             </Card>
         </Link>
     );
-}
+});

@@ -1,56 +1,52 @@
 'use client';
 
+import React, { useState } from 'react';
 import { useAddMultipleBottles } from '@/lib/hooks/use-bottles';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
-import { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useWine } from '@/lib/hooks/use-wines';
-import React from 'react';
-
-// Using useSearchParams or params? It's a page, so params.
-// But we need to unwrap params in Next.js 15+ 
-// However, I'll use the pattern seen in WineDetail (await params).
+import { useToast } from '@/components/ui/Toast';
 
 export default function AddBottlePage({ params }: { params: Promise<{ id: string }> }) {
-    // Need to unwrap params
-    const resolvedParams = React.use(params);
-    const id = resolvedParams.id;
+    const { id } = React.use(params);
 
     const router = useRouter();
-    const { data: wine, isLoading } = useWine(id);
+    const { showToast } = useToast();
+    const { data: wine, isLoading, error } = useWine(id);
     const addBottles = useAddMultipleBottles(id);
 
     const [count, setCount] = useState(1);
     const [location, setLocation] = useState('');
     const [bin, setBin] = useState('');
     const [price, setPrice] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setIsSubmitting(true);
         try {
             await addBottles.mutateAsync({
                 count: Number(count),
                 details: {
-                    location: location || undefined,
-                    bin: bin || undefined,
+                    location: location.trim() || undefined,
+                    bin: bin.trim() || undefined,
                     purchase_price: price ? Number(price) : undefined,
                     purchase_date: new Date().toISOString()
                 }
             });
+            showToast(`Added ${count} bottle${count > 1 ? 's' : ''} successfully`, 'success');
             router.push(`/wines/${id}`);
         } catch (error) {
+            const message = error instanceof Error ? error.message : 'Failed to add bottles';
+            showToast(message, 'error');
             console.error('Failed to add bottles', error);
-            setIsSubmitting(false);
         }
     };
 
     if (isLoading) return <div className="p-8 text-center">Loading...</div>;
-    if (!wine) return <div className="p-8 text-center">Wine not found</div>;
+    if (error) return <div className="p-8 text-center text-red-600">Error: {error.message}</div>;
+    if (!wine) return <div className="p-8 text-center text-gray-500">Wine not found</div>;
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-2xl">
@@ -119,8 +115,8 @@ export default function AddBottlePage({ params }: { params: Promise<{ id: string
                     </div>
 
                     <div className="flex justify-end pt-4">
-                        <Button type="submit" disabled={isSubmitting}>
-                            {isSubmitting ? 'Adding...' : `Add ${count} Bottle${count > 1 ? 's' : ''}`}
+                        <Button type="submit" disabled={addBottles.isPending}>
+                            {addBottles.isPending ? 'Adding...' : `Add ${count} Bottle${count > 1 ? 's' : ''}`}
                         </Button>
                     </div>
                 </form>

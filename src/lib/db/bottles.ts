@@ -9,7 +9,7 @@ export async function getBottles(wineId: string): Promise<Bottle[]> {
         .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data.map(row => bottleSchema.parse(row));
+    return (data || []).map(row => bottleSchema.parse(row));
 }
 
 export async function addBottle(bottle: BottleInsert): Promise<Bottle> {
@@ -44,7 +44,7 @@ export async function addMultipleBottles(wineId: string, count: number, details:
         .select();
 
     if (error) throw error;
-    return data.map(row => bottleSchema.parse(row));
+    return (data || []).map(row => bottleSchema.parse(row));
 }
 
 export async function updateBottle(id: string, updates: BottleUpdate): Promise<Bottle> {
