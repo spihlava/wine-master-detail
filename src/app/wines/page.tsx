@@ -1,7 +1,7 @@
-import Link from 'next/link';
-import { WineList } from '@/components/wine/WineList';
-import { Button } from '@/components/ui/Button';
 import { Plus } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/Button';
+import { WineList } from '@/components/wine/WineList';
 
 export default function WinesPage() {
     return (

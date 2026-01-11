@@ -1,7 +1,7 @@
-
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getWines, getWine, createWine, updateWine, deleteWine, WineNotFoundError } from '../wines';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { supabase } from '../supabase';
+import { getWines, getWine, createWine, WineNotFoundError } from '../wines';
+import type { WineInsert } from '@/lib/types/wine';
 
 // Mock Supabase client
 vi.mock('../supabase', () => ({
@@ -20,7 +20,7 @@ vi.mock('../supabase', () => ({
 }));
 
 // Helper to mock the chain easily
-const mockFrom = supabase.from as any;
+const mockFrom = supabase.from as Mock;
 
 describe('Wine Service', () => {
     beforeEach(() => {
@@ -88,7 +88,7 @@ describe('Wine Service', () => {
 
     describe('createWine', () => {
         it('should insert and return new wine', async () => {
-            const newWine = { name: 'New Wine', type: 'Red' };
+            const newWine: WineInsert = { name: 'New Wine', type: 'Red' };
             const returnedWine = {
                 id: '123e4567-e89b-12d3-a456-426614174000',
                 ...newWine,
@@ -104,7 +104,7 @@ describe('Wine Service', () => {
                 })
             });
 
-            const result = await createWine(newWine as any);
+            const result = await createWine(newWine);
             expect(result.name).toBe('New Wine');
         });
     });

@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useId } from 'react';
-import { Bottle } from '@/lib/types/bottle';
+import { Trash2, Wine, MapPin } from 'lucide-react';
+import React, { useState, useId } from 'react';
 import { StatusBadge } from '@/components/generic/StatusBadge';
 import { Button } from '@/components/ui/Button';
-import { ConsumeModal } from './ConsumeModal';
-import { useDeleteBottle, useUpdateBottle } from '@/lib/hooks/use-bottles';
 import { useToast } from '@/components/ui/Toast';
-import { Trash2, Wine, MapPin } from 'lucide-react';
+import { useDeleteBottle, useUpdateBottle } from '@/lib/hooks/use-bottles';
+import { Bottle } from '@/lib/types/bottle';
+import { ConsumeModal } from './ConsumeModal';
 
 interface BottleRowProps {
     bottle: Bottle;
@@ -16,21 +16,23 @@ interface BottleRowProps {
 export const BottleRow: React.FC<BottleRowProps> = ({ bottle }) => {
     const [isConsumeModalOpen, setIsConsumeModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [location, setLocation] = useState(bottle.location || '');
-    const [bin, setBin] = useState(bottle.bin || '');
+    // Initialize edit fields from props - they get reset when entering edit mode
+    const [location, setLocation] = useState('');
+    const [bin, setBin] = useState('');
 
     const locationId = useId();
     const binId = useId();
     const { showToast } = useToast();
 
-    // Sync local state when bottle prop changes
-    useEffect(() => {
-        setLocation(bottle.location || '');
-        setBin(bottle.bin || '');
-    }, [bottle.location, bottle.bin]);
-
     const deleteBottle = useDeleteBottle(bottle.wine_id);
     const updateBottle = useUpdateBottle(bottle.wine_id);
+
+    const startEditing = () => {
+        // Initialize edit state from current bottle data
+        setLocation(bottle.location || '');
+        setBin(bottle.bin || '');
+        setIsEditing(true);
+    };
 
     const handleDelete = () => {
         if (confirm('Are you sure you want to delete this bottle?')) {
@@ -108,7 +110,7 @@ export const BottleRow: React.FC<BottleRowProps> = ({ bottle }) => {
                     <button
                         type="button"
                         className="flex items-center space-x-2 group text-left"
-                        onClick={() => bottle.status === 'cellar' && setIsEditing(true)}
+                        onClick={() => bottle.status === 'cellar' && startEditing()}
                         disabled={bottle.status !== 'cellar'}
                         aria-label={bottle.status === 'cellar' ? 'Click to edit location' : undefined}
                     >

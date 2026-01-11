@@ -1,12 +1,12 @@
 'use client';
 
+import { X } from 'lucide-react';
 import React, { useState, useEffect, useRef, useId } from 'react';
-import { Bottle } from '@/lib/types/bottle';
-import { useConsumeBottle } from '@/lib/hooks/use-bottles';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useToast } from '@/components/ui/Toast';
-import { X } from 'lucide-react';
+import { useConsumeBottle } from '@/lib/hooks/use-bottles';
+import { Bottle } from '@/lib/types/bottle';
 
 interface ConsumeModalProps {
     isOpen: boolean;

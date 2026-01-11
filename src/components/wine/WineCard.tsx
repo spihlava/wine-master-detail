@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import React, { memo } from 'react';
-import type { Wine } from '@/lib/types/wine';
 import { Card } from '@/components/ui/Card';
+import type { Wine } from '@/lib/types/wine';
 
 export const WineCard = memo(function WineCard({ wine }: { wine: Wine }) {
     return (

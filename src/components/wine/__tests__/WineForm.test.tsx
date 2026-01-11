@@ -1,8 +1,8 @@
-
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { WineForm } from '../WineForm';
 import { useRouter } from 'next/navigation';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
+import { ToastProvider } from '@/components/ui/Toast';
+import { WineForm } from '../WineForm';
 
 // Mock next/navigation
 vi.mock('next/navigation', () => ({
@@ -25,23 +25,28 @@ vi.mock('@/lib/hooks/use-wines', () => ({
     }),
 }));
 
+// Wrapper with required providers
+function TestWrapper({ children }: { children: React.ReactNode }) {
+    return <ToastProvider>{children}</ToastProvider>;
+}
+
 describe('WineForm', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        (useRouter as any).mockReturnValue({
+        (useRouter as Mock).mockReturnValue({
             push: mockPush,
             back: vi.fn(),
         });
     });
 
     it('renders correctly for new wine', () => {
-        render(<WineForm />);
+        render(<WineForm />, { wrapper: TestWrapper });
         expect(screen.getByText('Add New Wine')).toBeDefined();
         expect(screen.getByLabelText(/Wine Name/)).toBeDefined();
     });
 
     it('validates required fields', async () => {
-        render(<WineForm />);
+        render(<WineForm />, { wrapper: TestWrapper });
         const submitBtn = screen.getByText('Add Wine');
         fireEvent.click(submitBtn);
 
@@ -50,7 +55,7 @@ describe('WineForm', () => {
     });
 
     it('submits valid data', async () => {
-        render(<WineForm />);
+        render(<WineForm />, { wrapper: TestWrapper });
 
         fireEvent.change(screen.getByLabelText(/Wine Name/), { target: { value: 'Test Wine' } });
         fireEvent.change(screen.getByLabelText(/Vintage/), { target: { value: '2020' } });

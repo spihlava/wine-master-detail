@@ -1,11 +1,10 @@
 'use client';
 
+import { Plus } from 'lucide-react';
 import React from 'react';
+import { Button } from '@/components/ui/Button';
 import { useBottles, useAddMultipleBottles } from '@/lib/hooks/use-bottles';
 import { BottleRow } from './BottleRow';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner'; // Assume this exists or handle loading
-import { Button } from '@/components/ui/Button';
-import { Plus } from 'lucide-react';
 
 interface BottleTableProps {
     wineId: string;

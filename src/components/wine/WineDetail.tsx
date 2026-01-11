@@ -1,13 +1,13 @@
 'use client';
 
-import { useWine, useDeleteWine } from '@/lib/hooks/use-wines';
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
-import { useRouter } from 'next/navigation';
 import { Edit, Trash2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { BottleTable } from '@/components/bottle/BottleTable';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { useWine, useDeleteWine } from '@/lib/hooks/use-wines';
 
 export function WineDetail({ wineId }: { wineId: string }) {
     const router = useRouter();

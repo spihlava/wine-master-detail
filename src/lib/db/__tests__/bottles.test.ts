@@ -1,7 +1,7 @@
-
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
 import { getBottles, addBottle, updateBottle, deleteBottle, consumeBottle } from '../bottles';
 import { supabase } from '../supabase';
+import type { BottleInsert } from '@/lib/types/bottle';
 
 // Mock Supabase client
 vi.mock('../supabase', () => ({
@@ -19,7 +19,7 @@ vi.mock('../supabase', () => ({
 }));
 
 // Helper to mock the chain easily
-const mockFrom = supabase.from as any;
+const mockFrom = supabase.from as Mock;
 
 describe('Bottle Service', () => {
     beforeEach(() => {
@@ -48,7 +48,7 @@ describe('Bottle Service', () => {
 
     describe('addBottle', () => {
         it('should insert and return new bottle', async () => {
-            const newBottle = { wine_id: '123e4567-e89b-12d3-a456-426614174001', status: 'cellar' };
+            const newBottle: BottleInsert = { wine_id: '123e4567-e89b-12d3-a456-426614174001', status: 'cellar' };
             const returnedBottle = {
                 id: '123e4567-e89b-12d3-a456-426614174000',
                 ...newBottle,
@@ -64,7 +64,7 @@ describe('Bottle Service', () => {
                 })
             });
 
-            const result = await addBottle(newBottle as any);
+            const result = await addBottle(newBottle);
             expect(result.id).toBe('123e4567-e89b-12d3-a456-426614174000');
         });
     });
@@ -140,7 +140,6 @@ describe('Bottle Service', () => {
     describe('consumeBottle', () => {
         it('should update bottle status to Consumed', async () => {
             const id = '123e4567-e89b-12d3-a456-426614174000';
-            const updates = { status: 'consumed', my_rating: 90 };
             const returnedBottle = {
                 id,
                 wine_id: '123e4567-e89b-12d3-a456-426614174001',

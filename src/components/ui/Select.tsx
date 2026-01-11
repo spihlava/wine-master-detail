@@ -1,5 +1,5 @@
-import { cn } from '@/lib/utils/cn';
 import { forwardRef, useId } from 'react';
+import { cn } from '@/lib/utils/cn';
 
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
     label?: string;

@@ -1,8 +1,8 @@
 'use client';
 
+import { AlertCircle } from 'lucide-react';
 import { useWines } from '@/lib/hooks/use-wines';
 import { WineCard } from './WineCard';
-import { AlertCircle } from 'lucide-react';
 
 export function WineList() {
     const { data: wines, isLoading, error } = useWines();
