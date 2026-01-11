@@ -1,21 +1,31 @@
 # Wine Cellar - Master-Detail Application
 
-A wine inventory management system built on the master-detail pattern. Track your wine collection with proper normalization: wines (products) and bottles (your inventory).
+A wine inventory management system built on a **nested master-detail pattern** with full event logging.
 
 ## 🍷 Overview
 
-This app solves the problem of wine inventory tracking by properly separating:
-- **Wine** (Master): What the wine IS (producer, vintage, ratings)
-- **Bottle** (Detail): What YOU have (location, purchase price, your notes)
+This app uses a three-tier architecture:
 
-When you buy a case of 12 bottles, create ONE wine record and TWELVE bottle records.
+```
+Wine (Master) → Bottles (Detail) → Events (Sub-Detail)
+```
+
+- **Wine** (Master): Product reference data (producer, vintage, ratings)
+- **Bottle** (Detail): Your inventory instances (location, status, purchase info)
+- **Events** (Sub-Detail): Audit trail per bottle
+  - **Transactions**: Purchases, sales, gifts, valuations
+  - **Movements**: Location/bin changes over time
+  - **Tastings**: Sampling notes + consumption records
+
+When you buy a case of 12 bottles: create 1 wine + 12 bottles + 12 purchase transactions.
 
 ## ✨ Features
 
 - **Wine Management**: Add, edit, and organize wines by producer, vintage, type, region
 - **Bottle Tracking**: Track individual bottles with location, purchase info, and value
+- **Event Logging**: Full audit trail - track every transaction, movement, and tasting
 - **Status Lifecycle**: Bottles move from cellar → consumed/gifted/sold/damaged
-- **Consumption History**: Record your ratings and tasting notes when you drink
+- **Consumption History**: Record your ratings and tasting notes (supports multiple tastings per bottle)
 - **Drinking Window Alerts**: Know when wines are ready or past their prime
 - **Cellar Stats**: See total value, bottle counts, and inventory insights
 
